@@ -32,27 +32,27 @@
         const contentDiv = document.getElementById('content');
         const editButton = document.getElementById('editButton');
         const saveButton = document.getElementById('saveButton');
-
-        // Fetch the initial content from the server
-        fetch('/content')
+    
+        // Fetch the initial content from the Render backend
+        fetch('https://webscrapertyperlab.onrender.com/content')
             .then(response => response.json())
             .then(data => {
                 contentDiv.innerHTML = data.content;
-            });
-
+            })
+            .catch(error => console.error('Error fetching content:', error));
+    
         editButton.addEventListener('click', function() {
             contentDiv.contentEditable = "true";
             contentDiv.focus();
             editButton.style.display = 'none';
             saveButton.style.display = 'inline';
         });
-
+    
         saveButton.addEventListener('click', function() {
-            contentDiv.contentEditable = "false";
             const updatedContent = contentDiv.innerHTML;
-
-            // Save the new content to the server
-            fetch('/save', {
+    
+            // Send a POST request to save the content to the Render backend
+            fetch('https://webscrapertyperlab.onrender.com/save', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -64,11 +64,14 @@
                 if (data.success) {
                     alert('Content saved!');
                 }
-            });
-
+            })
+            .catch(error => console.error('Error saving content:', error));
+    
+            contentDiv.contentEditable = "false";
             editButton.style.display = 'inline';
             saveButton.style.display = 'none';
         });
     </script>
+    
 </body>
 </html>
