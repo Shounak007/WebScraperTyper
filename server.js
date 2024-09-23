@@ -1,13 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const cors = require('cors');  // Enable CORS
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware to parse JSON requests
 app.use(bodyParser.json());
 
-// Serve static files (your HTML, CSS, and JavaScript)
+// Enable CORS for all routes
+app.use(cors());
+
+// Serve static files (your HTML, CSS, and JavaScript) if needed
 app.use(express.static('public'));
 
 // Load the initial content
@@ -31,7 +35,7 @@ app.get('/content', (req, res) => {
 app.post('/save', (req, res) => {
     const newContent = req.body.content;
     content = newContent;
-    
+
     // Save content to the JSON file
     fs.writeFileSync(contentFile, JSON.stringify({ content }));
     res.json({ success: true });
@@ -39,5 +43,5 @@ app.post('/save', (req, res) => {
 
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
