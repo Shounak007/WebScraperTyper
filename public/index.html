@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editable Web Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #content {
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 200px;
+        }
+        #editButton, #saveButton {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Editable Web Page</h1>
+    <div id="content" contenteditable="false">
+        Loading content...
+    </div>
+    <button id="editButton">Edit</button>
+    <button id="saveButton" style="display:none;">Save</button>
+
+    <script>
+        const contentDiv = document.getElementById('content');
+        const editButton = document.getElementById('editButton');
+        const saveButton = document.getElementById('saveButton');
+
+        // Fetch the initial content from the server
+        fetch('/content')
+            .then(response => response.json())
+            .then(data => {
+                contentDiv.innerHTML = data.content;
+            });
+
+        editButton.addEventListener('click', function() {
+            contentDiv.contentEditable = "true";
+            contentDiv.focus();
+            editButton.style.display = 'none';
+            saveButton.style.display = 'inline';
+        });
+
+        saveButton.addEventListener('click', function() {
+            contentDiv.contentEditable = "false";
+            const updatedContent = contentDiv.innerHTML;
+
+            // Save the new content to the server
+            fetch('/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ content: updatedContent })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Content saved!');
+                }
+            });
+
+            editButton.style.display = 'inline';
+            saveButton.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
